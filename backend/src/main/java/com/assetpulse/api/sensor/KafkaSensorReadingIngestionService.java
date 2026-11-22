@@ -1,6 +1,7 @@
 package com.assetpulse.api.sensor;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,7 @@ public class KafkaSensorReadingIngestionService implements SensorReadingIngestio
 
     public KafkaSensorReadingIngestionService(
             KafkaTemplate<Object, Object> kafka,
-            org.springframework.beans.factory.annotation.Value("${app.kafka.sensor-topic}") String topic) {
+            @Value("${app.kafka.sensor-topic}") String topic) {
         this.kafka = kafka;
         this.topic = topic;
     }
