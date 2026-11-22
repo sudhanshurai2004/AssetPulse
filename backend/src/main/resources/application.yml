@@ -43,3 +43,5 @@ app:
     password: ${APP_BOOTSTRAP_PASSWORD}
   kafka:
     sensor-topic: sensor.readings
+  sensor-ingestion:
+    mode: ${APP_SENSOR_INGESTION_MODE:kafka}
