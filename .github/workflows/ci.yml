@@ -15,6 +15,8 @@ jobs:
           distribution: temurin
           java-version: "21"
           cache: maven
+      - name: Configure Testcontainers Docker API
+        run: echo 'api.version=1.44' > ~/.docker-java.properties
       - name: Test backend
         run: mvn -B test
         working-directory: backend
