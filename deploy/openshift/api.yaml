@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: assetpulse-api
+  labels:
+    app: assetpulse-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: assetpulse-api
+  template:
+    metadata:
+      labels:
+        app: assetpulse-api
+    spec:
+      containers:
+        - name: api
+          image: image-registry.openshift-image-registry.svc:5000/your-project/assetpulse-api:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: assetpulse-secrets
+                  key: database-url
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: assetpulse-secrets
+                  key: database-username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: assetpulse-secrets
+                  key: database-password
+            - name: APP_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: assetpulse-secrets
+                  key: jwt-secret
+            - name: APP_BOOTSTRAP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: assetpulse-secrets
+                  key: bootstrap-username
+            - name: APP_BOOTSTRAP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: assetpulse-secrets
+                  key: bootstrap-password
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: assetpulse-config
+                  key: kafka-bootstrap-servers
+            - name: APP_CORS_ALLOWED_ORIGINS
+              valueFrom:
+                configMapKeyRef:
+                  name: assetpulse-config
+                  key: cors-allowed-origins
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: assetpulse-api
+spec:
+  selector:
+    app: assetpulse-api
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: assetpulse-api
+spec:
+  to:
+    kind: Service
+    name: assetpulse-api
+  port:
+    targetPort: http
+  tls:
+    termination: edge

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: assetpulse-config
+data:
+  kafka-bootstrap-servers: redpanda:9092
+  cors-allowed-origins: https://assetpulse-your-project.apps.example.com
