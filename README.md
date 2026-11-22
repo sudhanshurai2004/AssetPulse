@@ -2,6 +2,10 @@
 
 AssetPulse is an asset maintenance and work-order platform. It combines a Spring Boot API, PostgreSQL, Redpanda-compatible Kafka messaging, and a Vue 3 dashboard.
 
+## Live demo
+
+[Open AssetPulse](https://assetpulse-kappa.vercel.app/)
+
 ## Architecture
 
 ```mermaid
